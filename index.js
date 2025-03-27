@@ -28,10 +28,14 @@ const Country = mongoose.model("Country", countrySchema, "Countries");
 // Use postman to add at least THREE different countries
 app.post("/add/country", async(req,res) =>{
   const newCountry = await new Country({
-    country1: req.body.name,
-    country2: req.body.name,
-    country3: req.body.name,
+    country: req.body.country,
+    flagURL: req.body.flagURL,
+    population: req.body.population,
+    officialLanguage: req.body.officialLanguage,
+    hasNuclearWeapons: req.body.hasNuclearWeapons,
   }).save()
+req.json(newCountry)
+})
 
 
 // Create a GET route for "/" that renders countries.ejs with every country from the Countries collection (1 point)
@@ -45,17 +49,32 @@ app.get("/", async (req, res)=>{
 
 // Create a dynamic PATCH route handler for "/update/{name}" that modifies the population of the country specified in the path (3 points)
 // Test this route on post man
-
+app.patch("/update/:name", async (req,res)=>{
+  const updatedCountry = await countries.findOneAndUpdate(
+    { 
+     country: req.params.country
+    },
+  {
+    country: req.body.country
+  }
+)
+    res.json(updatedCountry)
+})
 
 
 // Create a DELETE route handler for "/delete/country" that deletes a country of your choice (3 points)
 // Test this route on post man
-
+app.patch("/delete/:country" , async (req,res)=>{
+    const deletedCountry = await countries.findOneAndDelete({ 
+    country: req.params.country
+    })
+    res.json(deletedCountry)
+})
 
 async function startServer() {
   
     // add your SRV string with a database called countries
-    await mongoose.connect("mongodb+srv://SE12:CSH2025@akdoingse12.4hcgu.mongodb.net/?retryWrites=true&w=majority&appName=akdoingse12")
+    await mongoose.connect("mongodb+srv://SE12:CSH2025@akdoingse12.4hcgu.mongodb.net/countries?retryWrites=true&w=majority&appName=akdoingse12")
 
   app.listen(3000, () => {
     console.log("Server is running");
